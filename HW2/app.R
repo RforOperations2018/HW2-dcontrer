@@ -31,3 +31,46 @@ rownames(crime) <- NULL  # renumber rows
 crime[2:7] <- round(crime[2:7], digits = 2)  # round all numbers to 2 digits
 
 pdf(NULL)
+
+# Define UI for application that draws a histogram
+ui <- navbarPage("Major City Crime Stats (2015)", # set page name
+                 tabPanel("Scatterplot", # set tab name
+                          sidebarLayout(
+                            sidebarPanel(
+                              # City Selection
+                              pickerInput("citySelect", # create city selection slider, default to 10 selections
+                                          "City:", 
+                                          choices = sort(unique(crime$City)), 
+                                          multiple = TRUE,
+                                          selected = cities[1:10],
+                                          options = list(`max-options` = 58)),
+                              # Crime Selection
+                              pickerInput("crimeSelect", # create crime selection slider, limit to 2 selections for scatterplot
+                                          "Crimes:",
+                                          choices = crime_types,
+                                          multiple = TRUE,
+                                          selected = crime_types[1:2],
+                                          options = list(`max-options` = 2)),
+                              # Population Selection
+                              sliderInput("popSelect", # create population size slider
+                                          "Population Size:",
+                                          min = min(crime$Population, na.rm = T),
+                                          max = max(crime$Population, na.rm = T),
+                                          value = c(min(crime$Population, na.rm = T), max(crime$Population, na.rm = T)),
+                                          step = 1),
+                              actionButton("reset", "Reset Filters", icon = icon("refresh")) # add button to reset filters
+                            ),
+                            # Output plot
+                            mainPanel(
+                              plotlyOutput("plot")
+                            )
+                          )
+                 ),
+                 # Data Table
+                 tabPanel("Table",
+                          inputPanel(
+                            downloadButton("downloadData","Download Crime Data") # add button to download table as csv
+                          ),
+                          fluidPage(DT::dataTableOutput("table"))
+                 )
+)
