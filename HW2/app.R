@@ -74,3 +74,24 @@ ui <- navbarPage("Major City Crime Stats (2015)", # set page name
                           fluidPage(DT::dataTableOutput("table"))
                  )
 )
+# Define server logic
+server <- function(input, output, session = session) {
+  # Filtered Crime data
+  crimeInput <- reactive({ 
+    crimeDat <- crime %>%
+      # Population Filter
+      filter(Population >= input$popSelect[1] & Population <= input$popSelect[2]) %>%
+      # Crime Filter
+      select(City, Population, input$crimeSelect[1], input$crimeSelect[2])
+    # City Filter
+    if (length(input$citySelect) > 0 ) {
+      crimeDat <- subset(crimeDat, City %in% input$citySelect)
+    }
+    return(crimeDat)
+  })
+  # Reactive melted data
+  mwInput <- reactive({
+    crimeInput() %>%
+      melt(id = "City")
+  })
+  
