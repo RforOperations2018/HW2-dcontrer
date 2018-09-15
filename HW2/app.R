@@ -94,4 +94,35 @@ server <- function(input, output, session = session) {
     crimeInput() %>%
       melt(id = "City")
   })
+  # Scatterplot showing relationship between two classes of crimes by city
+  output$plot <- renderPlotly({
+    dat <- crimeInput()
+    ggplotly(
+      ggplot(data = dat, aes_string(x = input$crimeSelect[1], y = input$crimeSelect[2], color = "City")) + 
+        geom_point() +
+        labs(x = as.character(input$crimeSelect[1]),  # axis and main title labels
+             y = as.character(input$crimeSelect[2]),
+             title = "Relationship Between Crime Types (per 1,000 people)") +
+        theme(plot.title = element_text(family = 'Helvetica',  # title formatting
+                                        color = '#181414', 
+                                        face = 'bold', 
+                                        size = 18, 
+                                        hjust = 0)) +
+        theme(axis.title.x = element_text(family = 'Helvetica',  # x-axis formatting
+                                          color = '#181414', 
+                                          face = 'bold', 
+                                          size = 12, 
+                                          hjust = 0)) +
+        theme(axis.title.y = element_text(family = 'Helvetica',  # y-axis formatting
+                                          color = '#181414', 
+                                          face = 'bold', 
+                                          size = 12, 
+                                          hjust = 0)) +
+        theme(legend.position = "none") +  # delete legend
+        guides(color = FALSE))
+  })
+  # Data Table
+  output$table <- DT::renderDataTable({
+    crimeDat <- crimeInput()
+  })
   
