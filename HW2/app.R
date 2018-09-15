@@ -142,3 +142,14 @@ server <- function(input, output, session = session) {
       write.csv(crimeInput(), file)
     }
   )
+  # Reset Filter Data
+  observeEvent(input$reset, {
+    updateSelectInput(session, "citySelect", selected = cities[1:10])
+    updateSelectInput(session, "crimeSelect", selected = crime_types[1:2])
+    updateSliderInput(session, "popSelect", value = c(min(crime$Population, na.rm = T), max(crime$Population, na.rm = T)))
+    showNotification("You have successfully reset the filters", type = "message")
+  })
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server, enableBookmarking = "url")
