@@ -11,6 +11,7 @@ library(shinythemes)
 library(stringr)
 library(shinyWidgets)
 
+# You need some dplyr in your life for cleaning things. I'm telling you, its great.
 crime <- read.csv("https://github.com/themarshallproject/city-crime/raw/master/data/ucr_crime_1975_2015.csv", 
                   header = T, sep = ",")  # read in data
 crime <- subset(crime, year == 2015)  # subset data to 2015
@@ -45,6 +46,7 @@ ui <- navbarPage("Major City Crime Stats (2015)", # set page name
                                           selected = cities[1:10],
                                           options = list(`max-options` = 58)),
                               # Crime Selection
+                              # I dunno if a single picker is the best way to handle this, since if I only select 1 the plot breaks.
                               pickerInput("crimeSelect", # create crime selection slider, limit to 2 selections for scatterplot
                                           "Crimes:",
                                           choices = crime_types,
@@ -58,6 +60,7 @@ ui <- navbarPage("Major City Crime Stats (2015)", # set page name
                                           max = max(crime$Population, na.rm = T),
                                           value = c(min(crime$Population, na.rm = T), max(crime$Population, na.rm = T)),
                                           step = 1),
+                              # In the future make some changes to this function yourself, even if its just cosmetic.
                               actionButton("reset", "Reset Filters", icon = icon("refresh")) # add button to reset filters
                             ),
                             # Output plot
@@ -82,6 +85,7 @@ server <- function(input, output, session = session) {
       # Population Filter
       filter(Population >= input$popSelect[1] & Population <= input$popSelect[2]) %>%
       # Crime Filter
+      # This is where your app breaks when only one crimeType is selected.
       select(City, Population, input$crimeSelect[1], input$crimeSelect[2])
     # City Filter
     if (length(input$citySelect) > 0 ) {
@@ -147,6 +151,7 @@ server <- function(input, output, session = session) {
     updateSelectInput(session, "citySelect", selected = cities[1:10])
     updateSelectInput(session, "crimeSelect", selected = crime_types[1:2])
     updateSliderInput(session, "popSelect", value = c(min(crime$Population, na.rm = T), max(crime$Population, na.rm = T)))
+    # Same thing, make some changes.
     showNotification("You have successfully reset the filters", type = "message")
   })
 }
