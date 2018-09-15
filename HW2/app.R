@@ -1,4 +1,4 @@
-# Author: Dominic Contreras
+# Author: Dominic Contreras.1
 # Title: HW2
 # Date: September 14 2018
 # Class: R Shiny for Operations Management
