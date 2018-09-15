@@ -125,4 +125,12 @@ server <- function(input, output, session = session) {
   output$table <- DT::renderDataTable({
     crimeDat <- crimeInput()
   })
+  # Updating the URL Bar
+  observe({
+    print(reactiveValuesToList(input))
+    session$doBookmark()
+  })
+  onBookmarked(function(url) {
+    updateQueryString(url)
+  })
   
