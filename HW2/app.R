@@ -133,4 +133,12 @@ server <- function(input, output, session = session) {
   onBookmarked(function(url) {
     updateQueryString(url)
   })
-  
+  # Download data in the datatable
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste("crime-data-", Sys.Date(), ".csv", sep="")
+    },
+    content = function(file) {
+      write.csv(crimeInput(), file)
+    }
+  )
